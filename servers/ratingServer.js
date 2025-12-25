@@ -11,7 +11,7 @@ export const RatingPage = (req, res) => {
 };
 
 export const submitRating = asyncHandler(async (req, res) => {
-  if (!req.body.name || !req.body.phone || !req.body.numGTables) {
+  if (!req.body.name || !req.body.phone ) {
     return res.status(400).json({ message: 'Invalid request' });
   }
 
