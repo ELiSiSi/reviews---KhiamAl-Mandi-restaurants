@@ -71,6 +71,7 @@
               <th>الاسم</th>
               <th>رقم الهاتف</th>
               <th>رقم الطاولة</th>
+              <th>الخيمة</th>
               <th>الكاشير</th>
               <th>النظافة</th>
               <th>جودة الطعام</th>
@@ -94,6 +95,7 @@
               <td class="name-cell"><strong><%= rating.name %></strong></td>
               <td class="phone-cell"><%= rating.phone || '-' %></td>
               <td><span class="badge"><%= rating.numGTables %></span></td>
+              <td><span class="badge"><%= rating.tent %></span></td>
               <td>
                 <span class="rating-value"><%= rating.cashier %>/10</span>
               </td>

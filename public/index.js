@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const nameInput = document.getElementById('nameInput');
   const phoneInput = document.getElementById('phoneInput');
   const numGTablesInput = document.getElementById('numGTablesInput');
-
+const tentInput = document.getElementById('tentInput');
   // عرض القيمة الحالية لكل slider
   ['cashier', 'cleanliness', 'foodQuality', 'service'].forEach((id) => {
     const slider = document.getElementById(id);
@@ -48,6 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
       hasError = true;
     }
 
+    if (!tentInput.value) {
+       tentInput.classList.add('input-error');
+      hasError = true;
+    }
+
     if (hasError) {
       message.textContent = '⚠️ من فضلك أدخل الاسم و رقم الهاتف ورقم الطاولة';
       message.classList.add('show', 'error');
@@ -63,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
       name: formData.get('name'),
       phone: formData.get('phone'),
       numGTables: formData.get('numGTables'),
+      tent: formData.get('tent'),
       cashier: formData.get('cashier'),
       cleanliness: formData.get('cleanliness'),
       foodQuality: formData.get('foodQuality'),
@@ -105,4 +111,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 3000);
     }
   });
+});
+
+
+// داخل الـ submit، مع باقي الحقول المطلوبة:
+if (!tentInput.value) {
+  tentInput.classList.add('input-error');
+  hasError = true;
+}
+
+// وإزالة التحذير عند الاختيار:
+tentInput.addEventListener('change', () => {
+  tentInput.classList.remove('input-error');
 });
