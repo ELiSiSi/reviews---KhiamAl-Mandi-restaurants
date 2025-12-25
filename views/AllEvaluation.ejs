@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>جميع التقييمات</title>
+    <link rel="stylesheet" href="/AllEvaluation.css" />
+  </head>
+  <body>
+    <!--start header-->
+    <div class="header">
+      <div class="header-container">
+        <div class="logo"><img src="/image/logo.jpg" alt="خيم المندي " /></div>
+        <div class="name">
+          <h1>خيم المندي</h1>
+        </div>
+      </div>
+    </div>
+    <!--end header-->
+
+    <div class="container">
+      <h1>📊 تقييمات العملاء</h1>
+
+      <!-- ✅ فلتر البحث بالتاريخ -->
+      <div class="filter-section">
+        <h3>🔍 فلتر التقييمات حسب التاريخ</h3>
+        <div class="filter-inputs">
+          <div class="filter-group">
+            <label for="startDate">من تاريخ:</label>
+            <input type="date" id="startDate" class="date-input" />
+          </div>
+          <div class="filter-group">
+            <label for="endDate">إلى تاريخ:</label>
+            <input type="date" id="endDate" class="date-input" />
+          </div>
+          <button id="filterBtn" class="filter-btn">بحث 🔎</button>
+          <button id="resetBtn" class="reset-btn">إعادة تعيين 🔄</button>
+        </div>
+      </div>
+<div class="delete-section">
+
+      <form
+        action="/Khiam-Al-Mandi-restaurants/show/api/deleteall?_method=DELETE"
+        method="POST">
+        <button type="submit" class="delete-all-btn">
+          🗑️ حذف جميع التقييمات
+        </button>
+      </form>
+</div>
+      <div class="stats">
+        <div class="stat-card">
+          <h3>📈 إجمالي التقييمات</h3>
+          <p class="stat-number" id="totalCount"><%= ratings.length %></p>
+        </div>
+        <div class="stat-card">
+          <h3>⭐ متوسط التقييمات</h3>
+          <p class="stat-number" id="avgRating">
+            <% if (ratings.length > 0) { const totalAvg = ratings.reduce((sum,
+            r) => sum + (r.cashier + r.cleanliness + r.foodQuality + r.service)
+            / 4, 0) / ratings.length; %> <%= totalAvg.toFixed(1) %>/10 <% } else
+            { %> - <% } %>
+          </p>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="ratings-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>الاسم</th>
+              <th>رقم الهاتف</th>
+              <th>رقم الطاولة</th>
+              <th>الكاشير</th>
+              <th>النظافة</th>
+              <th>جودة الطعام</th>
+              <th>الخدمة</th>
+              <th>المتوسط</th>
+              <th>ملاحظات</th>
+              <th>التاريخ</th>
+            </tr>
+          </thead>
+          <tbody id="ratingsTableBody">
+            <% if (ratings.length === 0) { %>
+            <tr>
+              <td colspan="11" class="no-data">لا توجد تقييمات حتى الآن</td>
+            </tr>
+            <% } else { %> <% ratings.forEach(function(rating, index) { const
+            avg = ((rating.cashier + rating.cleanliness + rating.foodQuality +
+            rating.service) / 4).toFixed(1); const ratingClass = avg >= 8 ?
+            'excellent' : avg >= 6 ? 'good' : 'poor'; %>
+            <tr class="<%= ratingClass %>" data-date="<%= rating.createdAt %>">
+              <td><%= index + 1 %></td>
+              <td class="name-cell"><strong><%= rating.name %></strong></td>
+              <td class="phone-cell"><%= rating.phone || '-' %></td>
+              <td><span class="badge"><%= rating.numGTables %></span></td>
+              <td>
+                <span class="rating-value"><%= rating.cashier %>/10</span>
+              </td>
+              <td>
+                <span class="rating-value"><%= rating.cleanliness %>/10</span>
+              </td>
+              <td>
+                <span class="rating-value"><%= rating.foodQuality %>/10</span>
+              </td>
+              <td>
+                <span class="rating-value"><%= rating.service %>/10</span>
+              </td>
+              <td>
+                <span class="average <%= ratingClass %>"><%= avg %></span>
+              </td>
+              <td class="notes-cell"><%= rating.notes || '-' %></td>
+              <td class="date-cell">
+                <%= new Date(rating.createdAt).toLocaleDateString('ar-EG') %>
+              </td>
+            </tr>
+            <% }); %> <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const filterBtn = document.getElementById('filterBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const tableBody = document.getElementById('ratingsTableBody');
+        const totalCount = document.getElementById('totalCount');
+        const avgRating = document.getElementById('avgRating');
+
+        // جلب كل الصفوف
+        const allRows = Array.from(tableBody.querySelectorAll('tr'));
+
+        // دالة الفلترة
+        filterBtn.addEventListener('click', () => {
+          const startDate = startDateInput.value
+            ? new Date(startDateInput.value)
+            : null;
+          const endDate = endDateInput.value
+            ? new Date(endDateInput.value)
+            : null;
+
+          if (endDate) {
+            endDate.setHours(23, 59, 59, 999); // نهاية اليوم
+          }
+
+          let visibleCount = 0;
+          let totalAvg = 0;
+
+          allRows.forEach((row) => {
+            const rowDate = new Date(row.getAttribute('data-date'));
+
+            let shouldShow = true;
+
+            if (startDate && rowDate < startDate) {
+              shouldShow = false;
+            }
+
+            if (endDate && rowDate > endDate) {
+              shouldShow = false;
+            }
+
+            if (shouldShow) {
+              row.style.display = '';
+              visibleCount++;
+
+              // حساب المتوسط
+              const avgCell = row.querySelector('.average');
+              if (avgCell) {
+                totalAvg += parseFloat(avgCell.textContent);
+              }
+            } else {
+              row.style.display = 'none';
+            }
+          });
+
+          // تحديث الإحصائيات
+          totalCount.textContent = visibleCount;
+          avgRating.textContent =
+            visibleCount > 0
+              ? (totalAvg / visibleCount).toFixed(1) + '/10'
+              : '-';
+
+          // رسالة إذا لم يتم العثور على نتائج
+          if (visibleCount === 0) {
+            tableBody.innerHTML =
+              '<tr><td colspan="10" class="no-data">لا توجد تقييمات في هذه الفترة</td></tr>';
+          }
+        });
+
+        // إعادة تعيين
+        resetBtn.addEventListener('click', () => {
+          startDateInput.value = '';
+          endDateInput.value = '';
+
+          allRows.forEach((row) => {
+            row.style.display = '';
+          });
+
+          // إعادة الإحصائيات الأصلية
+          totalCount.textContent = '<%= ratings.length %>';
+          avgRating.textContent = `
+                    <% if (ratings.length > 0) {
+                        const totalAvg = ratings.reduce((sum, r) => sum + (r.cashier + r.cleanliness + r.foodQuality + r.service) / 4, 0) / ratings.length;
+                    %>
+                        <%= totalAvg.toFixed(1) %>/10
+                    <% } else { %>
+                        -
+                    <% } %>
+                `;
+        });
+      });
+    </script>
+  </body>
+</html>
