@@ -17,7 +17,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-app.use(cors());
 
 // secrets and security middlewares
 import { xss } from 'express-xss-sanitizer';
@@ -47,11 +46,11 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // Routes
-app.use('/Khiam-Al-Mandi-restaurants', ratingRouter);
-app.use('/Khiam-Al-Mandi-restaurants/show', allEvaluationRouter);
+app.use('/', ratingRouter);
+app.use('/', allEvaluationRouter);
 
 app.get('/', async (req, res) => {
-   res.redirect('/Khiam-Al-Mandi-restaurants/rating');
+   res.redirect('/rating');
 });
 
 
@@ -59,7 +58,7 @@ mongoose
   .connect(MONGO_URI)
   .then(() => {
     app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}/Khiam-Al-Mandi-restaurants/rating`);
+      console.log(`Server running on http://localhost:${PORT}/rating`);
     });
   })
   .catch((err) => {

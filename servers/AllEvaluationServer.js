@@ -13,5 +13,5 @@ export const AllEvaluation = asyncHandler(async (req, res) => {
 
 export const deleteAllEvaluations = asyncHandler(async (req, res) => {
   await Rating.deleteMany({});
-  res.redirect('/Khiam-Al-Mandi-restaurants/show/all-evaluation');  
+  res.redirect('/all-evaluation');
 });
