@@ -9,7 +9,7 @@ export async function connectToDatabase() {
 
   try {
     const connection = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 30000,  
+      serverSelectionTimeoutMS: 30000, // ✅ 30 ثانية timeout (أطول)
       socketTimeoutMS: 75000,
     });
 
