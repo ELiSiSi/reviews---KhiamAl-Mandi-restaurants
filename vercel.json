@@ -1,14 +1,21 @@
 {
   "version": 2,
-  "rewrites": [
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/app.js"
+      "src": "index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "index.js"
     }
   ],
   "functions": {
-    "app.js": {
-      "includeFiles": "views/**"
+    "index.js": {
+      "memory": 1024,
+      "maxDuration": 10
     }
   }
 }
